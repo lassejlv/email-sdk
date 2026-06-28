@@ -22,78 +22,30 @@
 pub use email_sdk_core::*;
 
 pub mod providers {
-    pub mod brevo {
-        pub use email_sdk_provider_brevo::*;
-    }
-    pub mod cloudflare {
-        pub use email_sdk_provider_cloudflare::*;
-    }
-    pub mod iterable {
-        pub use email_sdk_provider_iterable::*;
-    }
-    pub mod jetemail {
-        pub use email_sdk_provider_jetemail::*;
-    }
-    pub mod lettermint {
-        pub use email_sdk_provider_lettermint::*;
-    }
-    pub mod loops {
-        pub use email_sdk_provider_loops::*;
-    }
-    pub mod mailchimp {
-        pub use email_sdk_provider_mailchimp::*;
-    }
-    pub mod mailersend {
-        pub use email_sdk_provider_mailersend::*;
-    }
-    pub mod mailgun {
-        pub use email_sdk_provider_mailgun::*;
-    }
-    pub mod mailpace {
-        pub use email_sdk_provider_mailpace::*;
-    }
-    pub mod mailtrap {
-        pub use email_sdk_provider_mailtrap::*;
-    }
-    pub mod memory {
-        pub use email_sdk_provider_memory::*;
-    }
-    pub mod plunk {
-        pub use email_sdk_provider_plunk::*;
-    }
-    pub mod postmark {
-        pub use email_sdk_provider_postmark::*;
-    }
-    pub mod primitive {
-        pub use email_sdk_provider_primitive::*;
-    }
-    pub mod resend {
-        pub use email_sdk_provider_resend::*;
-    }
-    pub mod scaleway {
-        pub use email_sdk_provider_scaleway::*;
-    }
-    pub mod sendgrid {
-        pub use email_sdk_provider_sendgrid::*;
-    }
-    pub mod sequenzy {
-        pub use email_sdk_provider_sequenzy::*;
-    }
-    pub mod ses {
-        pub use email_sdk_provider_ses::*;
-    }
-    pub mod smtp {
-        pub use email_sdk_provider_smtp::*;
-    }
-    pub mod sparkpost {
-        pub use email_sdk_provider_sparkpost::*;
-    }
-    pub mod unosend {
-        pub use email_sdk_provider_unosend::*;
-    }
-    pub mod zeptomail {
-        pub use email_sdk_provider_zeptomail::*;
-    }
+    pub mod brevo;
+    pub mod cloudflare;
+    pub mod iterable;
+    pub mod jetemail;
+    pub mod lettermint;
+    pub mod loops;
+    pub mod mailchimp;
+    pub mod mailersend;
+    pub mod mailgun;
+    pub mod mailpace;
+    pub mod mailtrap;
+    pub mod memory;
+    pub mod plunk;
+    pub mod postmark;
+    pub mod primitive;
+    pub mod resend;
+    pub mod scaleway;
+    pub mod sendgrid;
+    pub mod sequenzy;
+    pub mod ses;
+    pub mod smtp;
+    pub mod sparkpost;
+    pub mod unosend;
+    pub mod zeptomail;
 }
 
 pub use providers::{

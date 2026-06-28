@@ -10,28 +10,14 @@ categories.workspace = true
 description = "Rust email SDK with client, plugins, retries, fallbacks, SMTP, and all provider integrations."
 
 [dependencies]
+async-trait.workspace = true
+base64.workspace = true
+chrono.workspace = true
 email-sdk-core = { version = "0.1.0", path = "../email-sdk-core" }
-email-sdk-provider-brevo = { version = "0.1.0", path = "../providers/brevo" }
-email-sdk-provider-cloudflare = { version = "0.1.0", path = "../providers/cloudflare" }
-email-sdk-provider-iterable = { version = "0.1.0", path = "../providers/iterable" }
-email-sdk-provider-jetemail = { version = "0.1.0", path = "../providers/jetemail" }
-email-sdk-provider-lettermint = { version = "0.1.0", path = "../providers/lettermint" }
-email-sdk-provider-loops = { version = "0.1.0", path = "../providers/loops" }
-email-sdk-provider-mailchimp = { version = "0.1.0", path = "../providers/mailchimp" }
-email-sdk-provider-mailersend = { version = "0.1.0", path = "../providers/mailersend" }
-email-sdk-provider-mailgun = { version = "0.1.0", path = "../providers/mailgun" }
-email-sdk-provider-mailpace = { version = "0.1.0", path = "../providers/mailpace" }
-email-sdk-provider-mailtrap = { version = "0.1.0", path = "../providers/mailtrap" }
-email-sdk-provider-memory = { version = "0.1.0", path = "../providers/memory" }
-email-sdk-provider-plunk = { version = "0.1.0", path = "../providers/plunk" }
-email-sdk-provider-postmark = { version = "0.1.0", path = "../providers/postmark" }
-email-sdk-provider-primitive = { version = "0.1.0", path = "../providers/primitive" }
-email-sdk-provider-resend = { version = "0.1.0", path = "../providers/resend" }
-email-sdk-provider-scaleway = { version = "0.1.0", path = "../providers/scaleway" }
-email-sdk-provider-sendgrid = { version = "0.1.0", path = "../providers/sendgrid" }
-email-sdk-provider-sequenzy = { version = "0.1.0", path = "../providers/sequenzy" }
-email-sdk-provider-ses = { version = "0.1.0", path = "../providers/ses" }
-email-sdk-provider-smtp = { version = "0.1.0", path = "../providers/smtp" }
-email-sdk-provider-sparkpost = { version = "0.1.0", path = "../providers/sparkpost" }
-email-sdk-provider-unosend = { version = "0.1.0", path = "../providers/unosend" }
-email-sdk-provider-zeptomail = { version = "0.1.0", path = "../providers/zeptomail" }
+hmac.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+tokio.workspace = true
+tokio-native-tls.workspace = true
