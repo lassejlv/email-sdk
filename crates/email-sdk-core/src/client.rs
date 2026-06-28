@@ -165,6 +165,12 @@ impl SendBatchItem {
     }
 }
 
+impl From<EmailMessage> for SendBatchItem {
+    fn from(message: EmailMessage) -> Self {
+        Self::new(message)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum SendBatchResult {
     Ok {
@@ -175,6 +181,36 @@ pub enum SendBatchResult {
         index: usize,
         error: EmailSdkError,
     },
+}
+
+impl SendBatchResult {
+    pub fn index(&self) -> usize {
+        match self {
+            Self::Ok { index, .. } | Self::Err { index, .. } => *index,
+        }
+    }
+
+    pub fn is_ok(&self) -> bool {
+        matches!(self, Self::Ok { .. })
+    }
+
+    pub fn is_err(&self) -> bool {
+        matches!(self, Self::Err { .. })
+    }
+
+    pub fn response(&self) -> Option<&EmailProviderResponse> {
+        match self {
+            Self::Ok { response, .. } => Some(response),
+            Self::Err { .. } => None,
+        }
+    }
+
+    pub fn error(&self) -> Option<&EmailSdkError> {
+        match self {
+            Self::Ok { .. } => None,
+            Self::Err { error, .. } => Some(error),
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -297,11 +333,16 @@ impl EmailClient {
         self.send_with_adapters(message, options).await
     }
 
-    pub async fn send_batch(
+    pub async fn send_batch<I, T>(
         &self,
-        messages: Vec<SendBatchItem>,
+        messages: I,
         options: Option<SendOptions>,
-    ) -> Vec<SendBatchResult> {
+    ) -> Vec<SendBatchResult>
+    where
+        I: IntoIterator<Item = T>,
+        T: Into<SendBatchItem>,
+    {
+        let messages = messages.into_iter().map(Into::into).collect::<Vec<_>>();
         let mut results = Vec::with_capacity(messages.len());
 
         for (index, item) in messages.into_iter().enumerate() {
@@ -320,6 +361,17 @@ impl EmailClient {
         }
 
         results
+    }
+
+    pub async fn send_many<I>(
+        &self,
+        messages: I,
+        options: Option<SendOptions>,
+    ) -> Vec<SendBatchResult>
+    where
+        I: IntoIterator<Item = EmailMessage>,
+    {
+        self.send_batch(messages, options).await
     }
 
     async fn send_with_adapters(
@@ -583,14 +635,29 @@ impl AdapterClient {
         self.client.send(message, Some(options)).await
     }
 
-    pub async fn send_batch(
+    pub async fn send_batch<I, T>(
         &self,
-        messages: Vec<SendBatchItem>,
+        messages: I,
         options: Option<SendOptions>,
-    ) -> Vec<SendBatchResult> {
+    ) -> Vec<SendBatchResult>
+    where
+        I: IntoIterator<Item = T>,
+        T: Into<SendBatchItem>,
+    {
         let mut options = options.unwrap_or_default();
         options.adapter = Some(self.adapter.clone());
         self.client.send_batch(messages, Some(options)).await
+    }
+
+    pub async fn send_many<I>(
+        &self,
+        messages: I,
+        options: Option<SendOptions>,
+    ) -> Vec<SendBatchResult>
+    where
+        I: IntoIterator<Item = EmailMessage>,
+    {
+        self.send_batch(messages, options).await
     }
 }
 
@@ -963,5 +1030,39 @@ mod tests {
         assert!(matches!(results[0], SendBatchResult::Ok { index: 0, .. }));
         assert!(matches!(results[1], SendBatchResult::Err { index: 1, .. }));
         assert_eq!(provider.sends(), 1);
+    }
+
+    #[tokio::test]
+    async fn send_batch_accepts_plain_messages() {
+        let provider = StaticProvider::shared("memory");
+        let client =
+            create_email_client(EmailClientOptions::new().adapter(provider.clone())).unwrap();
+
+        let results = client
+            .send_batch(
+                vec![message(), message()],
+                Some(SendOptions::new().retries(1)),
+            )
+            .await;
+
+        assert_eq!(results.len(), 2);
+        assert!(results.iter().all(SendBatchResult::is_ok));
+        assert_eq!(results[0].index(), 0);
+        assert!(results[0].response().is_some());
+        assert!(results[0].error().is_none());
+        assert_eq!(provider.sends(), 2);
+    }
+
+    #[tokio::test]
+    async fn send_many_is_plain_message_batch_alias() {
+        let provider = StaticProvider::shared("memory");
+        let client =
+            create_email_client(EmailClientOptions::new().adapter(provider.clone())).unwrap();
+
+        let results = client.send_many([message(), message()], None).await;
+
+        assert_eq!(results.len(), 2);
+        assert!(results.iter().all(SendBatchResult::is_ok));
+        assert_eq!(provider.sends(), 2);
     }
 }

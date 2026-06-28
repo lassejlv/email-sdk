@@ -13,7 +13,7 @@ description = "Rust email SDK with client, plugins, retries, fallbacks, SMTP, an
 async-trait.workspace = true
 base64.workspace = true
 chrono.workspace = true
-email-sdk-core = { version = "0.1.0", path = "../email-sdk-core" }
+email-sdk-core = { version = "0.1.1", path = "../email-sdk-core" }
 hmac.workspace = true
 reqwest.workspace = true
 serde.workspace = true

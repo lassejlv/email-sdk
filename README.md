@@ -104,6 +104,73 @@ let response = client
 # Ok::<(), email_sdk::EmailSdkError>(())
 ```
 
+## Batch Sends
+
+Use `send_many` when every message should use the same options:
+
+```rust
+use email_sdk::{EmailClientOptions, EmailMessage, create_email_client};
+use email_sdk::providers::resend::{ResendProviderOptions, resend};
+
+let client = create_email_client(
+    EmailClientOptions::new()
+        .adapter(resend(ResendProviderOptions::new("re_api_key"))),
+)?;
+
+let results = client
+    .send_many(
+        [
+            EmailMessage::builder("hello@example.com", "a@example.com", "Welcome")
+                .text("Hello A")
+                .build(),
+            EmailMessage::builder("hello@example.com", "b@example.com", "Welcome")
+                .text("Hello B")
+                .build(),
+        ],
+        None,
+    )
+    .await;
+
+for result in results {
+    if let Some(error) = result.error() {
+        eprintln!("message {} failed: {}", result.index(), error);
+    }
+}
+# Ok::<(), email_sdk::EmailSdkError>(())
+```
+
+Use `send_batch` with `SendBatchItem` when individual messages need adapter or fallback overrides:
+
+```rust
+use email_sdk::{
+    EmailClientOptions, EmailMessage, SendBatchItem, SendOptions, create_email_client,
+};
+
+# async fn example(client: email_sdk::EmailClient) {
+let results = client
+    .send_batch(
+        [
+            SendBatchItem::new(
+                EmailMessage::builder("hello@example.com", "a@example.com", "Welcome")
+                    .text("Hello A")
+                    .build(),
+            )
+            .provider("resend"),
+            SendBatchItem::new(
+                EmailMessage::builder("hello@example.com", "b@example.com", "Welcome")
+                    .text("Hello B")
+                    .build(),
+            )
+            .provider("smtp")
+            .fallback_adapters(["resend"]),
+        ],
+        Some(SendOptions::new().retries(1)),
+    )
+    .await;
+# let _ = results;
+# }
+```
+
 ## SMTP
 
 The SMTP provider includes a Rust socket transport with plaintext SMTP, implicit TLS, STARTTLS, `AUTH PLAIN`, `AUTH LOGIN`, MIME body generation, envelope validation, and header-name validation.
