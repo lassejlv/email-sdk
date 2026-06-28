@@ -1,0 +1,60 @@
+[workspace]
+members = [
+  "crates/email-sdk",
+  "crates/email-sdk-core",
+  "crates/providers/brevo",
+  "crates/providers/cloudflare",
+  "crates/providers/iterable",
+  "crates/providers/jetemail",
+  "crates/providers/lettermint",
+  "crates/providers/mailchimp",
+  "crates/providers/mailgun",
+  "crates/providers/mailersend",
+  "crates/providers/mailpace",
+  "crates/providers/mailtrap",
+  "crates/providers/loops",
+  "crates/providers/memory",
+  "crates/providers/plunk",
+  "crates/providers/primitive",
+  "crates/providers/postmark",
+  "crates/providers/resend",
+  "crates/providers/scaleway",
+  "crates/providers/sequenzy",
+  "crates/providers/ses",
+  "crates/providers/sendgrid",
+  "crates/providers/smtp",
+  "crates/providers/sparkpost",
+  "crates/providers/unosend",
+  "crates/providers/zeptomail",
+]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/lassejlv/email-sdk"
+readme = "README.md"
+keywords = ["email", "sdk", "transactional", "smtp"]
+categories = ["email", "api-bindings"]
+
+[workspace.dependencies]
+async-trait = "0.1"
+base64 = "0.22"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+hmac = "0.12"
+reqwest = { version = "0.12", default-features = false, features = ["json", "multipart", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+thiserror = "2"
+tokio = { version = "1", features = [
+  "fs",
+  "io-util",
+  "macros",
+  "net",
+  "rt",
+  "rt-multi-thread",
+  "time",
+] }
+tokio-native-tls = "0.3"

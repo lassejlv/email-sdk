@@ -1,0 +1,20 @@
+[package]
+name = "email-sdk-provider-sparkpost"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "SparkPost provider for email-sdk."
+
+[dependencies]
+async-trait.workspace = true
+email-sdk-core = { version = "0.1.0", path = "../../email-sdk-core" }
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

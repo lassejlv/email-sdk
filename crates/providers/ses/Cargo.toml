@@ -1,0 +1,23 @@
+[package]
+name = "email-sdk-provider-ses"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "Amazon SES provider for email-sdk."
+
+[dependencies]
+async-trait.workspace = true
+chrono.workspace = true
+email-sdk-core = { version = "0.1.0", path = "../../email-sdk-core" }
+hmac.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

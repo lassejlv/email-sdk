@@ -1,0 +1,20 @@
+[package]
+name = "email-sdk-provider-smtp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "SMTP provider and transport for email-sdk."
+
+[dependencies]
+async-trait.workspace = true
+base64.workspace = true
+email-sdk-core = { version = "0.1.0", path = "../../email-sdk-core" }
+tokio.workspace = true
+tokio-native-tls.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
