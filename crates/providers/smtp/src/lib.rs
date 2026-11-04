@@ -12,7 +12,63 @@ use tokio::{
     net::TcpStream,
     time::timeout,
 };
-use tokio_native_tls::{TlsConnector, TlsStream, native_tls};
+#[cfg(not(any(feature = "native-tls", feature = "rustls")))]
+compile_error!("SMTP needs a TLS backend: enable the `native-tls` (default) or `rustls` feature.");
+
+/// TLS through rustls with the Mozilla roots (`rustls` feature).
+#[cfg(feature = "rustls")]
+mod tls {
+    use std::sync::Arc;
+
+    use email_sdk_core::EmailSdkError;
+    use tokio::net::TcpStream;
+
+    pub type TlsStream<S> = tokio_rustls::client::TlsStream<S>;
+
+    pub struct TlsConnector(tokio_rustls::TlsConnector);
+
+    impl TlsConnector {
+        pub async fn connect(
+            &self,
+            host: &str,
+            tcp: TcpStream,
+        ) -> std::io::Result<TlsStream<TcpStream>> {
+            let name = rustls::pki_types::ServerName::try_from(host.to_owned())
+                .map_err(|error| std::io::Error::new(std::io::ErrorKind::InvalidInput, error))?;
+            self.0.connect(name, tcp).await
+        }
+    }
+
+    pub fn tls_connector() -> Result<TlsConnector, EmailSdkError> {
+        let roots =
+            rustls::RootCertStore::from_iter(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
+        let provider = Arc::new(rustls::crypto::ring::default_provider());
+        let config = rustls::ClientConfig::builder_with_provider(provider)
+            .with_safe_default_protocol_versions()
+            .map_err(|error| EmailSdkError::validation(error.to_string()))?
+            .with_root_certificates(roots)
+            .with_no_client_auth();
+        Ok(TlsConnector(tokio_rustls::TlsConnector::from(Arc::new(
+            config,
+        ))))
+    }
+}
+
+/// TLS through the platform's library (`native-tls` feature, the default).
+#[cfg(all(feature = "native-tls", not(feature = "rustls")))]
+mod tls {
+    use email_sdk_core::EmailSdkError;
+    pub use tokio_native_tls::{TlsConnector, TlsStream};
+
+    pub fn tls_connector() -> Result<TlsConnector, EmailSdkError> {
+        tokio_native_tls::native_tls::TlsConnector::builder()
+            .build()
+            .map(TlsConnector::from)
+            .map_err(|error| EmailSdkError::validation(error.to_string()))
+    }
+}
+
+use tls::{TlsStream, tls_connector};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SmtpAuthMethod {
@@ -433,13 +489,6 @@ impl SmtpConnection {
             Self::Tls(stream) => stream.read(chunk).await,
         }
     }
-}
-
-fn tls_connector() -> Result<TlsConnector, EmailSdkError> {
-    native_tls::TlsConnector::builder()
-        .build()
-        .map(TlsConnector::from)
-        .map_err(|error| EmailSdkError::validation(error.to_string()))
 }
 
 fn build_mime_message(message: &EmailMessage, default_reply_to: Option<&str>) -> String {
