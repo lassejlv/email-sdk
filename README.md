@@ -40,6 +40,14 @@ async fn main() -> Result<(), email_sdk::EmailSdkError> {
 }
 ```
 
+## TLS for SMTP
+
+SMTP uses the platform's TLS library by default (`native-tls`, OpenSSL on Linux). For a build without OpenSSL, use rustls and the Mozilla root certificates instead:
+
+```toml
+email-sdk = { version = "0.1", default-features = false, features = ["rustls"] }
+```
+
 ## Core Concepts
 
 - `EmailMessage` is the normalized message type shared by every provider.

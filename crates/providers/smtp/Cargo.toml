@@ -9,12 +9,23 @@ keywords.workspace = true
 categories.workspace = true
 description = "SMTP provider and transport for email-sdk."
 
+[features]
+default = ["native-tls"]
+# SMTP over TLS with the platform's library (OpenSSL on Linux).
+native-tls = ["dep:tokio-native-tls"]
+# SMTP over TLS with rustls and the Mozilla root certificates; wins over
+# `native-tls` when both are on.
+rustls = ["dep:tokio-rustls", "dep:rustls", "dep:webpki-roots"]
+
 [dependencies]
 async-trait.workspace = true
 base64.workspace = true
 email-sdk-core = { version = "0.1.0", path = "../../email-sdk-core" }
 tokio.workspace = true
-tokio-native-tls.workspace = true
+tokio-native-tls = { workspace = true, optional = true }
+tokio-rustls = { workspace = true, optional = true }
+rustls = { workspace = true, optional = true }
+webpki-roots = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio.workspace = true
